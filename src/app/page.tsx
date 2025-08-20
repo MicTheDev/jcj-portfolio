@@ -1,103 +1,419 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect, useRef } from 'react'
+import { Box, Container, Typography, Button, Grid, Card, CardContent, CardMedia, Chip, Paper } from '@mui/material'
+import { PlayArrow, Movie, Book, MusicNote, Business, School, TravelExplore } from '@mui/icons-material'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import ExternalWorks from '@/components/ExternalWorks'
+
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger)
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const heroRef = useRef<HTMLDivElement>(null)
+  const bioRef = useRef<HTMLDivElement>(null)
+  const worksRef = useRef<HTMLDivElement>(null)
+  const scriptsRef = useRef<HTMLDivElement>(null)
+  const contactRef = useRef<HTMLDivElement>(null)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+  useEffect(() => {
+    // Hero animation
+    if (heroRef.current) {
+      gsap.fromTo(heroRef.current, 
+        { opacity: 0, y: 100 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 1.5,
+          ease: "power3.out"
+        }
+      )
+    }
+
+    // Section animations
+    const sections = [bioRef, worksRef, scriptsRef, contactRef]
+    sections.forEach((ref) => {
+      if (ref.current) {
+        gsap.fromTo(ref.current,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ref.current,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        )
+      }
+    })
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    }
+  }, [])
+
+  const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
+    ref.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Navigation */}
+      <Box
+        component="nav"
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
+          bgcolor: 'rgba(10, 10, 10, 0.9)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
+              JOHNNIE
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 3 }}>
+              {[
+                { label: 'About', ref: bioRef },
+                { label: 'Works', ref: worksRef },
+                { label: 'Scripts', ref: scriptsRef },
+                { label: 'Contact', ref: contactRef }
+              ].map((item) => (
+                <Button
+                  key={item.label}
+                  onClick={() => scrollToSection(item.ref)}
+                  sx={{ color: 'text.primary', '&:hover': { color: 'primary.main' } }}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Hero Section */}
+      <Box
+        ref={heroRef}
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%)',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Typography variant="h1" sx={{ mb: 3, color: 'text.primary' }}>
+                Johnnie
+              </Typography>
+              <Typography variant="h2" sx={{ mb: 4, color: 'primary.main', fontWeight: 300 }}>
+                Writer • Producer • Director
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', fontSize: '1.2rem' }}>
+                Over 100 copyright works • IMDB Credits • TV & Film Productions
+              </Typography>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => scrollToSection(bioRef)}
+                sx={{ 
+                  px: 4, 
+                  py: 2, 
+                  fontSize: '1.1rem',
+                  background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #1565c0, #1976d2)',
+                  }
+                }}
+              >
+                Explore My Work
+              </Button>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box
+                sx={{
+                  width: '100%',
+                  height: 400,
+                  background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                  borderRadius: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    fontSize: '8rem',
+                    color: 'rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  ✍️
+                </Box>
+                <Typography variant="h3" sx={{ color: 'white', textAlign: 'center', zIndex: 1 }}>
+                  Creative Vision
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Bio Section */}
+      <Box ref={bioRef} sx={{ py: 10, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h2" sx={{ textAlign: 'center', mb: 6, color: 'text.primary' }}>
+            About Johnnie
+          </Typography>
+          <Grid container spacing={4}>
+                        <Grid item xs={12} md={8}>
+              <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary', fontSize: '1.1rem' }}>
+                A native of Oklahoma City, Oklahoma, Johnnie has been writing since his days in elementary school. Over the years he has written several dozen plays, screenplays and short stories with over 100 copyright works, in addition to songs, poems and spoken-word.
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary', fontSize: '1.1rem' }}>
+                He has several IMDB credits as a writer for TV and film. He was the founder of Soul-Conscious Productions, Inc. – the company that produced his earlier plays, including the 1998 original version of &ldquo;She&apos;s Not Our Sister&rdquo;, which premiered at the Majestic Theater in downtown Dallas, Texas.
+              </Typography>
+              <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary', fontSize: '1.1rem' }}>
+                In 2011 &ldquo;She&apos;s Not Our Sister&rdquo; was reintroduced to a new audience and presented at Friendship West Baptist Church, where it packed the house to over 4,200 patrons. Subsequently, Johnnie was approached about adapting the play for TV and within 5 months, &ldquo;She&apos;s Not Our Sister&rdquo; premiered on GMC Network (now Up Lift Network) with over 2 million viewers watching the presentation.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ height: '100%', bgcolor: 'background.default' }}>
+                <CardContent>
+                  <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>
+                    Education & Background
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <School sx={{ mr: 2, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary">
+                      Bachelor&apos;s in Business Administration
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <School sx={{ mr: 2, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary">
+                      Law Degree from SMU
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <Business sx={{ mr: 2, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary">
+                      Financial Services & Real Estate
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <TravelExplore sx={{ mr: 2, color: 'primary.main' }} />
+                    <Typography variant="body2" color="text.secondary">
+                      Travel & Cultural Enthusiast
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Works Section */}
+      <Box ref={worksRef} sx={{ py: 10, bgcolor: 'background.default' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h2" sx={{ textAlign: 'center', mb: 6, color: 'text.primary' }}>
+            Notable Works
+          </Typography>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ height: '100%', bgcolor: 'background.paper' }}>
+                <CardMedia
+                  component="div"
+                  sx={{
+                    height: 200,
+                    background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                  }}
+                >
+                  <PlayArrow sx={{ fontSize: '4rem', color: 'white' }} />
+                </CardMedia>
+                <CardContent>
+                  <Typography variant="h5" sx={{ mb: 2, color: 'text.primary' }}>
+                    She&apos;s Not Our Sister
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Premiered at Majestic Theater in Dallas (1998), later adapted for TV on GMC Network with over 2 million viewers.
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    <Chip label="Play" size="small" color="primary" />
+                    <Chip label="TV Adaptation" size="small" color="secondary" />
+                    <Chip label="4,200+ Patrons" size="small" variant="outlined" />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ height: '100%', bgcolor: 'background.paper' }}>
+                <CardMedia
+                  component="div"
+                  sx={{
+                    height: 200,
+                    background: 'linear-gradient(45deg, #dc004e, #ff4081)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                  }}
+                >
+                  <Movie sx={{ fontSize: '4rem', color: 'white' }} />
+                </CardMedia>
+                <CardContent>
+                  <Typography variant="h5" sx={{ mb: 2, color: 'text.primary' }}>
+                    The Love You Save
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Film adaptation starring Robin Givens, Christopher Williams, and gospel artist Kierra &ldquo;Kiki&rdquo; Sheard.
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                    <Chip label="Film" size="small" color="primary" />
+                    <Chip label="DVD Release" size="small" color="secondary" />
+                    <Chip label="Star Cast" size="small" variant="outlined" />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12}>
+              <Card sx={{ bgcolor: 'background.paper' }}>
+                <CardContent>
+                  <Typography variant="h5" sx={{ mb: 3, color: 'text.primary' }}>
+                    Production Company
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                    Founded Soul-Conscious Productions, Inc. to produce his creative works and support other aspiring artists in the Dallas area.
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Chip icon={<PlayArrow />} label="Play Production" color="primary" />
+                    <Chip icon={<Movie />} label="Film Production" color="primary" />
+                    <Chip icon={<Book />} label="Script Development" color="primary" />
+                    <Chip icon={<MusicNote />} label="Creative Consulting" color="primary" />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+          
+          {/* External Works Component */}
+          <ExternalWorks />
+        </Container>
+      </Box>
+
+      {/* Scripts Section */}
+      <Box ref={scriptsRef} sx={{ py: 10, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h2" sx={{ textAlign: 'center', mb: 6, color: 'text.primary' }}>
+            Script Portfolio
+          </Typography>
+          <Typography variant="body1" sx={{ textAlign: 'center', mb: 6, color: 'text.secondary', maxWidth: 800, mx: 'auto' }}>
+            A diverse collection of scripts spanning multiple genres from romantic comedies and dramas to sci-fi thrillers.
+          </Typography>
+          <Grid container spacing={2}>
+            {[
+              'LEAVE OF ABSENCE', 'THE OTHER SIDE OF ME', 'MEMOIRS OF A SIDE PIECE',
+              'IN LOVE WITH A KILLER', 'LOVE IN A BOTTLE', 'A JONES FAMILY AFFAIR',
+              'BLOOD ON THE ALTAR', 'A PRINCESS IN THE GHETTO', 'SUGA WOMAN - PART UN',
+              'SUGA WOMAN - PART DEUX', 'SUGA WOMAN - PART TROIS', 'BRUTHA\'S KEEPER',
+              'IN BETWEEN TIME', 'MATCH MY LOVE', 'FRIENDS FOR LIFE (BLOOD BONDS)'
+            ].map((script, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Paper
+                  sx={{
+                    p: 3,
+                    textAlign: 'center',
+                    bgcolor: 'background.default',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 8px 25px rgba(0,0,0,0.3)',
+                      borderColor: 'primary.main',
+                    }
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: 'text.primary', mb: 1 }}>
+                    {script}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Script #{index + 1}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Contact Section */}
+      <Box ref={contactRef} sx={{ py: 10, bgcolor: 'background.default' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h2" sx={{ textAlign: 'center', mb: 6, color: 'text.primary' }}>
+            Get In Touch
+          </Typography>
+          <Grid container spacing={4} justifyContent="center">
+            <Grid item xs={12} md={8}>
+              <Card sx={{ bgcolor: 'background.paper', p: 4 }}>
+                <Typography variant="h5" sx={{ mb: 3, color: 'text.primary', textAlign: 'center' }}>
+                  Johnnie&apos;s Motto
+                </Typography>
+                                  <Typography variant="h6" sx={{ mb: 4, color: 'primary.main', textAlign: 'center', fontStyle: 'italic' }}>
+                    &ldquo;By satisfying the spirit of others, one&apos;s own spirit will be satisfied.&rdquo;
+                  </Typography>
+                <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', mb: 4 }}>
+                  Currently focused on writing, developing, and producing creative works. Available for collaborations, consulting, and creative partnerships.
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                  <Button variant="contained" size="large" startIcon={<PlayArrow />}>
+                    View Productions
+                  </Button>
+                  <Button variant="outlined" size="large" startIcon={<Book />}>
+                    Read Scripts
+                  </Button>
+                </Box>
+              </Card>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Footer */}
+      <Box sx={{ py: 4, bgcolor: 'background.paper', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <Container maxWidth="lg">
+          <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            © 2024 Johnnie. All rights reserved. | Writer • Producer • Director
+          </Typography>
+        </Container>
+      </Box>
+    </Box>
+  )
 }
